@@ -1,0 +1,21 @@
+.table-stripe {
+  border-collapse: collapse;
+  font-size: 18px;
+  color: #333;
+  width: 815px;
+  margin: auto;
+}
+.table-stripe td {
+  border-top-color: rgb(221, 221, 221);
+  border-top-style: solid;
+  border-top-width: 1px;
+  padding: 8px;
+  text-align: center;
+}
+.table-stripe th {
+  padding: 8px;
+  background-color: #B6CAE4;
+}
+.table-stripe tr:nth-child(odd) > td {
+  background-color: #f9f9f9;
+}

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <link rel="stylesheet" href="index.css">
+  <script type="text/javascript" src="jquery/dist/jquery.js"></script>
+  <script type="text/javascript" src="main.js"></script>
+</head>
+
+<body>
+  <table id="table-stripe" class="table-stripe">
+    <thead>
+      <th>姓名</th>
+      <th data-name="chinese" data-positiveSeq="True">语文</th>
+      <th data-name="math" data-positiveSeq="True">数学</th>
+    </thead>
+    <tbody>
+      {{#each scoreList}}
+      <tr>
+        <td>{{name}}</td>
+        <td>{{chinese}}</td>
+        <td>{{math}}</td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</body>
+
+</html>
