@@ -3,19 +3,35 @@ $(function() {
 
   $("#table-stripe thead").on("click", "th", function() {
     if ($(this).data('name')) {
-      var sortedList = sortScore($(this).data('name'));
-      if ($(this).data('positiveSeq') === 'Flase') {
-        sortedList.reverse();
-        $(this).data('positiveSeq', 'True');
+      // var sortedList = sortScore($(this).data('name'));
+      // if ($(this).data('positiveSeq') === 'Flase') {
+      //   sortedList.reverse();
+      //   $(this).data('positiveSeq', 'True');
+      // } else {
+      //   $(this).data('positiveSeq', 'Flase');
+      // }
+      var sortedList = [];
+      var sortKeyValue = $(this).data('name');
+      var sortOrderValue = $(this).data('order');
+      var sortInfo = {
+        sortKey: sortKeyValue,
+        sortOrder: sortOrderValue
+      };
+      if ($(this).data('order') === '-1') {
+        $(this).data('order', '1');
       } else {
-        $(this).data('positiveSeq', 'Flase');
+        $(this).data('order', '-1');
       }
-      $("#table-stripe tbody").empty();
-      sortedList.forEach(function(val) {
-        $("#table-stripe tbody").append("<tr>" +
-          "<td>" + val.name + "</td>" +
-          "<td>" + val.chinese + "</td>" +
-          "<td>" + val.math + "</td></tr>");
+      $.get("/score", sortInfo, function(score) {
+        console.log(score);
+        sortedList = score;
+        $("#table-stripe tbody").empty();
+        sortedList.forEach(function(val) {
+          $("#table-stripe tbody").append("<tr>" +
+            "<td>" + val.name + "</td>" +
+            "<td>" + val.chinese + "</td>" +
+            "<td>" + val.math + "</td></tr>");
+        });
       });
     }
   });
@@ -31,12 +47,5 @@ $(function() {
       });
     });
     return scoreList;
-  }
-
-  function sortScore(subject) {
-    var sortedList = scoreList.sort(function(a, b) {
-      return parseInt(b[subject]) - parseInt(a[subject]);
-    });
-    return sortedList;
   }
 });

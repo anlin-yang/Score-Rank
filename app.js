@@ -1,19 +1,39 @@
 var express = require('express');
-var app = express();
 var hbs = require('hbs');
+var fs = require('fs');
+var sort = require('./sort-score.js');
+var score = require('./scorelist');
+var app = express();
+
+var socreList = score.getscores();
 
 app.use(express.static('bower_components/'));
 app.use(express.static('public/'));
 
-app.set('view engine','html');
+app.set('view engine', 'html');
 app.engine('html', hbs.__express);
 
-app.get("/",function(req,res){
-  //res.sendFile(__dirname + "/views/index.html");
-  res.render('index',{scoreList:[{"name":"杨林","chinese":"52","math":"98"},
-  {"name":"喜洋洋","chinese":85,"math":26},
-  {"name":"奥巴马","chinese":89,"math":56},
-  {"name":"盖茨","chinese":87,"math":40}]});
+app.get("/", function(req, res) {
+  res.render('index', {
+    scoreList: socreList
+  });
+});
+
+app.get("/score", function(req, res) {
+  var sortKey = req.query.sortKey;
+  var sortOrder = req.query.sortOrder;
+  var sortedList = sort(socreList, sortKey, sortOrder);
+  res.send(sortedList);
+  // fs.readFile(__dirname + "/scorelist.js", {
+  //   encoding: 'utf-8',
+  //   flag: 'r'
+  // }, function(err, data) {
+  //   if (err) {
+  //     throw err;
+  //   }
+  //
+  //   res.send(data);
+  // });
 });
 
 app.listen(3000);
