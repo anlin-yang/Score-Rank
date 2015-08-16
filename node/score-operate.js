@@ -18,4 +18,10 @@ ScoreOperate.prototype.groupScore = function(scoreArr) {
   return scoreList;
 };
 
+ScoreOperate.prototype.sortScore = function(scoreList, subject, order) {
+  var sortedList = scoreList.sort(function(a, b) {
+    return (parseInt(b[subject]) - parseInt(a[subject])) * parseInt(order);
+  });
+  return sortedList;
+}
 module.exports = ScoreOperate;
