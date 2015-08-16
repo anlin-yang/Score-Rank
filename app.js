@@ -3,47 +3,46 @@ var hbs = require('hbs');
 var fs = require('fs');
 var sortScore = require('./sort-score.js');
 var mysql = require("mysql");
+var ScoreOperate = require('./node/score-operate.js');
 var app = express();
-
+var theScoreOperate = new ScoreOperate();
 var connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: 'yy',
   database: 'SCORE_RANK_DB'
 });
+
 app.use(express.static('bower_components/'));
 app.use(express.static('public/'));
-
 app.set('view engine', 'html');
 app.engine('html', hbs.__express);
 
 
+var groupedScoreList;
 
-app.get("/abc", function(req, res) {
-  var sqlStr = "select a.score_list_id,b.name,c.subject_name,a.score " +
-    "from score_list a,student_info b,subject c " +
-    "where a.student_id = b.student_info_id and a.subject_id = c.subject_id;";
-  connection.connect();
-  connection.query(sqlStr, function(err, rows, fields) {
-    if (err) throw err;
+var sqlStr = "select a.score_list_id,b.name,c.subject_name,a.score " +
+  "from score_list a,student_info b,subject c " +
+  "where a.student_id = b.student_info_id and a.subject_id = c.subject_id;";
+connection.connect();
+connection.query(sqlStr, function(err, rows, fields) {
+  if (err) throw err;
+  groupedScoreList = theScoreOperate.groupScore(rows);
+});
+connection.end();
 
-    console.log(rows);
+app.get("/", function(req, res, next) {
+  res.render('index', {
+    scoreList: groupedScoreList
   });
-
-  connection.end();
+  next();
+}, function(req, res) {
+  //res.send("..................");
 });
 
-
-app.get("/", function(req, res) {
-  fs.readFile(__dirname + "/scorelist.json", {
-    encoding: 'utf-8',
-    flag: 'r'
-  }, function(err, data) {
-    if (err) throw err;
-    var scoreList = JSON.parse(data);
-    res.render('index', {
-      scoreList: scoreList
-    });
+app.get("/delete", function(req, res) {
+  res.render('index', {
+    scoreList: groupedScoreList
   });
 });
 
