@@ -20,10 +20,13 @@
     <tbody>
       {{#each scoreList}}
       <tr>
-        <td>{{name}}</td>
+        <td data-id={{studentId}}>{{name}}</td>
         <td>{{chinese}}</td>
         <td>{{math}}</td>
         <td>{{english}}</td>
+        <td>
+          <input type="button" class="del" value="delete">
+        </td>
       </tr>
       {{/each}}
     </tbody>
