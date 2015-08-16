@@ -72,6 +72,14 @@ app.delete("/delUserScore", function(req, res, fields) {
   });
 });
 
+app.post("/insStuScore", function(req, res) {
+  var stuInfo = req.body;
+  var insStuInfo = "insert into student_info(name) values(" + stuInfo.name + ")";
+  var insScoreList = "insert into student_info(name) values(" + stuInfo.name + ")";
+  console.log(stuInfo);
+  res.send(stuInfo);
+});
+
 app.get("/scoreSort", function(req, res) {
   var sortKey = req.query.sortKey;
   var sortOrder = req.query.sortOrder;

@@ -22,6 +22,33 @@ $(function() {
     }
   });
 
+  $("#insStu").on("click", function() {
+    var insScoreTr = $(this).parent().parent().children();
+    var insName = insScoreTr.eq(0).children().val();
+    var insChinese = insScoreTr.eq(1).children().val();
+    var insMath = insScoreTr.eq(2).children().val();
+    var insEnglish = insScoreTr.eq(3).children().val();
+    var insObj = {
+      name: insName,
+      chinese: insChinese,
+      math: insMath,
+      english: insEnglish
+    };
+    $("#insStu").parent().parent().before("<tr><td>"+insName+"</td><td>"+insChinese+"</td><td>"+insMath+"</td><td>"+insEnglish+"</td><td><input type=\"button\" id=\"del\" value=\"delete\"></td></tr>");
+
+    $.ajax({
+      url: '/insStuScore',
+      data: insObj,
+      type: 'POST',
+      success: function(sortedList) {
+        console.log(sortedList);
+
+      }
+    });
+    //console.log("temp");
+  });
+
+
   $("#table-stripe tbody").on("click", ".del", function() {
     var delScoreTr = $(this).parent().parent().children();
     var delNameId = delScoreTr.eq(0).data("id");
