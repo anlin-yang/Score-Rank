@@ -66,7 +66,7 @@ $(function() {
     var delScoreTr = $(this).parent().parent().children();
     var delNameId = delScoreTr.eq(0).data("id");
     var delName = delScoreTr.eq(0).text().trim();
-    alert("Are you sure that you want to delete the user named " + delName);
+    alert("Are you sure that you want to delete the user named : " + delName);
     var rmElem = $(this).parent().parent();
     $.ajax({
       url: '/delUserScore',
