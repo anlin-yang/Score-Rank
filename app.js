@@ -16,7 +16,7 @@ app.use(express.static('public/'));
 app.set('view engine', 'html');
 app.engine('html', hbs.__express);
 
-app.get('*', function(req, res, next) {
+app.all('*', function(req, res, next) {
   connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
@@ -39,11 +39,9 @@ app.get("/", function(req, res) {
   connection.query(sqlStr, function(err, rows, fields) {
     if (err) throw err;
     var groupedScoreList = theScoreOperate.groupScore(rows);
-    //console.log(groupedScoreList);
     res.render('index', {
       scoreList: groupedScoreList
     });
-
     connection.end();
   });
 });
@@ -54,10 +52,10 @@ app.delete("/delUserScore", function(req, res, fields) {
   var sqlStr = "delete from score_list where student_id=" + delInfo.delNameId + ";";
   connection.query(sqlStr, function(err, rows) {
     if (err) throw err;
-    if (result.affectedRows > 0) {
+    if (rows.affectedRows > 0) {
       delResult = {
         status: 200,
-        message: "",
+        message: "success",
         data: ""
       };
     } else {
@@ -73,11 +71,33 @@ app.delete("/delUserScore", function(req, res, fields) {
 });
 
 app.post("/insStuScore", function(req, res) {
+  var insResult = {};
   var stuInfo = req.body;
-  var insStuInfo = "insert into student_info(name) values(" + stuInfo.name + ")";
-  var insScoreList = "insert into student_info(name) values(" + stuInfo.name + ")";
-  console.log(stuInfo);
-  res.send(stuInfo);
+  var sqlInsStu = "insert into student_info(name) values(\'" + stuInfo.name + "\');";
+  connection.query(sqlInsStu, function(err, rows) {
+    if (err) throw err;
+    var stuInfoId = rows.insertId;
+    var sqlInsScoList = "insert into score_list values " + "(\'\'," + stuInfoId + ",1," + stuInfo.chinese + ")," + "(\'\'," + stuInfoId + ",2," + stuInfo.math + ")," + "(\'\'," + stuInfoId + ",3," + stuInfo.english + ");";
+    connection.query(sqlInsScoList, function(err, rows) {
+      if (err) throw err;
+      if (rows.affectedRows > 0) {
+        insResult = {
+          status: 200,
+          message: "success",
+          data: ""
+        };
+      } else {
+        insResult = {
+          status: 404,
+          message: "insert failed",
+          data: ""
+        };
+      }
+      res.send(insResult);
+      connection.end();
+    });
+
+  });
 });
 
 app.get("/scoreSort", function(req, res) {

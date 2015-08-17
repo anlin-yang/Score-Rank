@@ -7,22 +7,30 @@ $(function() {
         sortOrder: $(this).data('order')
       };
       $.get("/scoreSort", sortInfo, function(sortedList) {
-        console.log(sortedList);
         $("#table-stripe tbody").empty();
         sortedList.forEach(function(val) {
           $("#table-stripe tbody").append("<tr>" +
-            "<td>" + val.name + "</td>" +
+            "<td data-id=" + val.studentId + ">" + val.name + "</td>" +
             "<td>" + val.chinese + "</td>" +
             "<td>" + val.math + "</td>" +
-            "<td>" + val.english + "</td></tr>");
+            "<td>" + val.english + "</td>" +
+            "<td>" + "<input type=\"button\" class=\"del\" value=\"delete\">" + "</td>" +
+            "</tr>");
         });
+        $("#table-stripe tbody").append("<tr> " +
+          "<td> <input type = \"text\"> </td> " +
+          "<td> <input type = \"text\"> </td> " +
+          "<td> <input type = \"text\"> </td> " +
+          "<td> <input type = \"text\"> </td> " +
+          "<td> <input type = \"button\" id=\"insStu\" value=\"insert\"> </td> " +
+          "</tr>");
       });
       var order = $(this).data('order') === '-1' ? '1' : '-1';
       $(this).data('order', order);
     }
   });
 
-  $("#insStu").on("click", function() {
+  $("#table-stripe tbody").on("click", "#insStu", function() {
     var insScoreTr = $(this).parent().parent().children();
     var insName = insScoreTr.eq(0).children().val();
     var insChinese = insScoreTr.eq(1).children().val();
@@ -34,58 +42,56 @@ $(function() {
       math: insMath,
       english: insEnglish
     };
-    $("#insStu").parent().parent().before("<tr><td>"+insName+"</td><td>"+insChinese+"</td><td>"+insMath+"</td><td>"+insEnglish+"</td><td><input type=\"button\" id=\"del\" value=\"delete\"></td></tr>");
-
+    var insElem = $("#insStu").parent().parent();
     $.ajax({
       url: '/insStuScore',
       data: insObj,
       type: 'POST',
-      success: function(sortedList) {
-        console.log(sortedList);
-
+      success: function(resInfo) {
+        switch (resInfo.status) {
+          case 200:
+            insElem.before("<tr><td>" + insName + "</td><td>" + insChinese + "</td><td>" + insMath + "</td><td>" + insEnglish + "</td><td><input type=\"button\" id=\"del\" value=\"delete\"></td></tr>");
+            break;
+          case 404:
+            alert("The insert failed!!!");
+            break;
+          default:
+            alert(resInfo.message);
+        }
       }
     });
-    //console.log("temp");
   });
-
 
   $("#table-stripe tbody").on("click", ".del", function() {
     var delScoreTr = $(this).parent().parent().children();
     var delNameId = delScoreTr.eq(0).data("id");
     var delName = delScoreTr.eq(0).text().trim();
     alert("Are you sure that you want to delete the user named " + delName);
-    $(this).parent().parent().remove();
+    var rmElem = $(this).parent().parent();
     $.ajax({
       url: '/delUserScore',
       data: {
         delNameId: delNameId
       },
       type: 'DELETE',
-      success: function(sortedList) {
-        console.log(sortedList);
-        switch (sortedList.status) {
+      success: function(resInfo) {
+        switch (resInfo.status) {
           case 200:
             var delChinese = delScoreTr.eq(1).text().trim();
             var delMath = delScoreTr.eq(2).text().trim();
             var delEnglish = delScoreTr.eq(3).text().trim();
-            alert("Delete the success：姓名:" + delName + "语文:" + delChinese + "数学:" + delMath + "英语:" + delEnglish);
-            $(this).parent().parent().remove();
+            alert("Delete the success： 姓名:" + delName + ", 语文:" + delChinese + ", 数学:" + delMath + ", 英语:" + delEnglish);
+            rmElem.remove();
             break;
           case 404:
             alert("You delete the data does not exist");
             break;
           default:
-            alert(sortedList.message);
+            alert(resInfo.message);
         }
       }
     });
   });
-
-
-
-
-
-
 
 
 });
