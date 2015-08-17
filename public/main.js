@@ -11,19 +11,13 @@ $(function() {
         sortedList.forEach(function(val) {
           $("#table-stripe tbody").append("<tr>" +
             "<td data-id=" + val.studentId + ">" + val.name + "</td>" +
-            "<td>" + val.chinese + "</td>" +
-            "<td>" + val.math + "</td>" +
-            "<td>" + val.english + "</td>" +
-            "<td>" + "<input type=\"button\" class=\"del\" value=\"delete\">" + "</td>" +
-            "</tr>");
+            "<td>" + val.chinese + "</td>" + "<td>" + val.math + "</td>" + "<td>" + val.english + "</td>" +
+            "<td> <input type=\"button\" class=\"del\" value=\"delete\"> </td> </tr>");
         });
         $("#table-stripe tbody").append("<tr> " +
-          "<td> <input type = \"text\"> </td> " +
-          "<td> <input type = \"text\"> </td> " +
-          "<td> <input type = \"text\"> </td> " +
-          "<td> <input type = \"text\"> </td> " +
-          "<td> <input type = \"button\" id=\"insStu\" value=\"insert\"> </td> " +
-          "</tr>");
+          "<td> <input type = \"text\"> </td> <td> <input type = \"text\"> </td> " +
+          "<td> <input type = \"text\"> </td> <td> <input type = \"text\"> </td> " +
+          "<td> <input type = \"button\" id=\"insStu\" value=\"insert\"> </td> </tr>");
       });
       var order = $(this).data('order') === '-1' ? '1' : '-1';
       $(this).data('order', order);
@@ -31,18 +25,18 @@ $(function() {
   });
 
   $("#table-stripe tbody").on("click", "#insStu", function() {
-    var insScoreTr = $(this).parent().parent().children();
-    var insName = insScoreTr.eq(0).children().val();
-    var insChinese = insScoreTr.eq(1).children().val();
-    var insMath = insScoreTr.eq(2).children().val();
-    var insEnglish = insScoreTr.eq(3).children().val();
+    var insScoreTr = $(this).closest("tr");
+    var insName = insScoreTr.find('input').eq(0).val();
+    var insChinese = insScoreTr.find('input').eq(1).val();
+    var insMath = insScoreTr.find('input').eq(2).val();
+    var insEnglish = insScoreTr.find('input').eq(3).val();
     var insObj = {
       name: insName,
       chinese: insChinese,
       math: insMath,
       english: insEnglish
     };
-    var insElem = $("#insStu").parent().parent();
+    var insElem = $("#insStu").closest("tr");
     $.ajax({
       url: '/insStuScore',
       data: insObj,
@@ -51,6 +45,10 @@ $(function() {
         switch (resInfo.status) {
           case 200:
             insElem.before("<tr><td>" + insName + "</td><td>" + insChinese + "</td><td>" + insMath + "</td><td>" + insEnglish + "</td><td><input type=\"button\" id=\"del\" value=\"delete\"></td></tr>");
+            insScoreTr.find('input').eq(0).val();
+            insScoreTr.find('input').eq(1).val();
+            insScoreTr.find('input').eq(2).val();
+            insScoreTr.find('input').eq(3).val();
             break;
           case 404:
             alert("The insert failed!!!");
@@ -63,11 +61,11 @@ $(function() {
   });
 
   $("#table-stripe tbody").on("click", ".del", function() {
-    var delScoreTr = $(this).parent().parent().children();
+    var delScoreTr = $(this).closest('tr').children();
     var delNameId = delScoreTr.eq(0).data("id");
     var delName = delScoreTr.eq(0).text().trim();
     alert("Are you sure that you want to delete the user named : " + delName);
-    var rmElem = $(this).parent().parent();
+    var rmElem = $(this).closest("tr");
     $.ajax({
       url: '/delUserScore',
       data: {

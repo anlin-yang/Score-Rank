@@ -96,7 +96,6 @@ app.post("/insStuScore", function(req, res) {
       res.send(insResult);
       connection.end();
     });
-
   });
 });
 
